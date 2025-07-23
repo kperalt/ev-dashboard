@@ -20,4 +20,8 @@ df_long = df_wide.melt(
 df_long['Company'] = df_long['Company'].str.replace('_sales', '').str.capitalize()
 
 # Ready Streamlit dashboard
-print(df_long.head())
+st.title("EV Sales Dashboard")
+st.dataframe(df_long)
+
+chart_data = df_long.pivot(index='Date', columns='Company', values='Sales')
+st.line_chart(chart_data)
