@@ -8,15 +8,15 @@ df_wide = pd.read_csv("EV_Data/data/final_ev_sales.csv")
 df_wide['Date'] = pd.to_datetime(df_wide['Date'])
 
 # Melt wide to long format
-df_long = df_wide.melt(
-    id_vars=['Date'], 
+df_sales_long = df_wide.melt(
+    id_vars=['Date'],
     value_vars=['BYD', 'Tesla', 'NIO'],
     var_name='Company',
     value_name='Sales'
 )
 
 # Clean company names
-df_long['Company'] = df_long['Company'].str.replace('_sales', '').str.capitalize()
+df_sales_long['Company'] = df_long['Company'].str.replace('_sales', '').str.capitalize()
 
 # Load Stock CSV
 df_stock = pd.read_csv("EV_Data/data/cleaned_stock_data.csv")
