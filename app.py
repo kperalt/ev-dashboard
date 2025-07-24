@@ -25,6 +25,7 @@ df_stock['Date'] = pd.to_datetime(df_stock['Date'])
 
 # Melt stock data to long format
 df_stock_long = df_stock.melt(
+    df_stock,
     id_vars=['Date'],
     value_vars=['Tesla_Close', 'BYD_Close', 'NIO_Close'],
     var_name='Company',
