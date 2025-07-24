@@ -30,6 +30,7 @@ df_stock_long = df_stock.melt(
     var_name='Company',
     value_name='Close'
 )
+# Clean company names
 df_stock_long['Company'] = df_stock_long['Company'].str.replace('_Close', '').str.capitalize()
 
 
@@ -37,15 +38,15 @@ df_stock_long['Company'] = df_stock_long['Company'].str.replace('_Close', '').st
 st.title("EV Market Insights Dashboard")
 
 # Create tabs: tab1 = Sales and tab2 = Stock
-tab1, tab2 = st.tabs(["📈 EV Sales", "💹 Stock Prices"])
+tab1, tab2 = st.tabs(["📊 EV Sales", "📈 Stock Prices"])
 
 #tab1
 with tab1:
     st.header("EV Sales Over Time")
 
     # Sidebar date filter
-    min_date = df_sales_long['Date'].min()
-    max_date = df_sales_long['Date'].max()
+    min_date = df_sales_long['Date'].min().date()
+    max_date = df_sales_long['Date'].max().date()
     start_date = st.sidebar.date_input("Start date", min_value=min_date, value=min_date)
     end_date = st.sidebar.date_input("End date", min_value=min_date, value=max_date)
 
@@ -76,17 +77,15 @@ with tab2:
     # Date slider
     min_stock_date = company_stock['Date'].min().date()
     max_stock_date = company_stock['Date'].max().date()
-    stock_range = st.slider(
-        "Select date range",
-        min_value=min_stock_date,
-        max_value=max_stock_date,
-        value=(min_stock_date, max_stock_date)
-    )
+    start_stock_date = st.slider("Start date", min_value=min_stock_date, max_value=max_stock_date, value=min_stock_date, key="stock_start")
+    end_stock_date = st.slider("End date", min_value=min_stock_date, max_value=max_stock_date, value=max_stock_date, key="stock_end")
 
-    filtered_stock = company_stock[
-        (company_stock['Date'] >= stock_range[0]) &
-        (company_stock['Date'] <= stock_range[1])
-    ]
-
-    st.write(f"Showing stock prices for **{selected_company}** from **{stock_range[0]}** to **{stock_range[1]}**")
-    st.line_chart(filtered_stock.set_index('Date')['Close'])
+    if start_stock_date > end_stock_date:
+        st.error("Error: End date must be after start date.")
+    else:
+        filtered_stock = company_stock[(company_stock['Date'] >= pd.to_datetime(start_stock_date)) &
+                                       (company_stock['Date'] <= pd.to_datetime(end_stock_date))]
+        st.write(f"Showing stock prices for **{selected_company}** from **{stock_range[0]}** to **{stock_range[1]}**")
+        st.dataframe(filtered_stock)
+        st.line_chart(filtered_stock.set_index('Date'))
+        st.line_chart(filtered_stock.set_index('Date')['Close'])
