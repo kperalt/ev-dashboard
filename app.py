@@ -40,5 +40,5 @@ st.write(f"Data from {start_date} to {end_date}")
 st.dataframe(filtered_data)
 
 # Line chart
-chart_data = filtered_data(index='Date', columns='Company', values='Sales')
+chart_data = filtered_data.pivot(index='Date', columns='Company', values='Sales')
 st.line_chart(chart_data)
