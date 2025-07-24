@@ -75,15 +75,18 @@ with tab2:
     company_stock = df_stock_long[df_stock_long['Company'] == selected_company]
 
     # Date selection
-    min_stock_date = company_stock['Date'].min().date()
-    max_stock_date = company_stock['Date'].max().date()
-    
-    stock_date_range = st.date_input(
-        "Select date range",
-        value=(min_stock_date, max_stock_date),
-        min_value=min_stock_date,
-        max_value=max_stock_date
-    )
+    if company_stock.empty:
+        st.warning(f"No stock data available for {selected_company}.")
+    else:
+        min_stock_date = company_stock['Date'].min().date()
+        max_stock_date = company_stock['Date'].max().date()
+
+        stock_date_range = st.date_input(
+            "Select date range",
+            value=(min_stock_date, max_stock_date),
+            min_value=min_stock_date,
+            max_value=max_stock_date
+        )
     
     # Unpack selected dates from date_input
     if isinstance(stock_date_range, tuple) and len(stock_date_range) == 2:
