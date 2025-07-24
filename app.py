@@ -74,8 +74,8 @@ with tab2:
     company_stock = df_stock_long[df_stock_long['Company'] == selected_company]
 
     # Date slider
-    min_stock_date = company_stock['Date'].min()
-    max_stock_date = company_stock['Date'].max()
+    min_stock_date = company_stock['Date'].min().date()
+    max_stock_date = company_stock['Date'].max().date()
     stock_range = st.slider(
         "Select date range",
         min_value=min_stock_date,
