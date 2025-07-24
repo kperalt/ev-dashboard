@@ -85,7 +85,7 @@ with tab2:
     else:
         filtered_stock = company_stock[(company_stock['Date'] >= pd.to_datetime(start_stock_date)) &
                                        (company_stock['Date'] <= pd.to_datetime(end_stock_date))]
-        st.write(f"Showing stock prices for **{selected_company}** from **{stock_range[0]}** to **{stock_range[1]}**")
+        st.write(f"Showing stock prices for **{selected_company}** from **{start_stock_date}** to **{end_stock_date}**")
         st.dataframe(filtered_stock)
         st.line_chart(filtered_stock.set_index('Date'))
         st.line_chart(filtered_stock.set_index('Date')['Close'])
