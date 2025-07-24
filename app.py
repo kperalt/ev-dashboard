@@ -25,14 +25,14 @@ df_stock['Date'] = pd.to_datetime(df_stock['Date'])
 
 # Melt stock data to long format
 df_stock_long = df_stock.melt(
-    df_stock,
     id_vars=['Date'],
     value_vars=['Tesla_Close', 'BYD_Close', 'NIO_Close'],
     var_name='Company',
     value_name='Close'
 )
 # Clean company names
-df_stock_long['Company'] = df_stock_long['Company'].str.replace('_Close', '').str.capitalize()
+df_stock_long['Company'] = df_stock_long['Company'].str.replace('_Close', '', regex=False).str.upper()
+
 
 
 # Ready Streamlit dashboard
