@@ -31,7 +31,12 @@ df_stock_long = df_stock.melt(
     value_name='Close'
 )
 # Clean company names
-df_stock_long['Company'] = df_stock_long['Company'].str.replace('_Close', '', regex=False).str.upper()
+df_stock_long['Company'] = df_stock_long['Company'].str.replace('_Close', '', regex=False)
+df_stock_long['Company'] = df_stock_long['Company'].replace({
+    'Tesla': 'Tesla',
+    'BYD': 'BYD',
+    'NIO': 'NIO'
+})
 
 
 
