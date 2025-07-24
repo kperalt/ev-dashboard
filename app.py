@@ -87,24 +87,23 @@ with tab2:
             min_value=min_stock_date,
             max_value=max_stock_date
         )
-    
-    # Unpack selected dates from date_input
-    if isinstance(stock_date_range, tuple) and len(stock_date_range) == 2:
-        start_stock_date, end_stock_date = stock_date_range
-    else:
-        start_stock_date = end_stock_date = stock_date_range
+            # Unpack selected dates from date_input
+        if isinstance(stock_date_range, tuple) and len(stock_date_range) == 2:
+            start_stock_date, end_stock_date = stock_date_range
+        else:
+            start_stock_date = end_stock_date = stock_date_range
 
-    if start_stock_date > end_stock_date:
-        st.error("Error: End date must be after start date.")
-    else:
-        # Filter stock data within selected date range
-        filtered_stock = company_stock[
-            (company_stock['Date'] >= pd.to_datetime(start_stock_date)) &
-            (company_stock['Date'] <= pd.to_datetime(end_stock_date))
-        ]
+        if start_stock_date > end_stock_date:
+            st.error("Error: End date must be after start date.")
+        else:
+            # Filter stock data within selected date range
+            filtered_stock = company_stock[
+                (company_stock['Date'] >= pd.to_datetime(start_stock_date)) &
+                (company_stock['Date'] <= pd.to_datetime(end_stock_date))
+            ]
 
-        st.write(f"Showing stock prices for **{selected_company}** from **{start_stock_date}** to **{end_stock_date}**")
-        st.dataframe(filtered_stock)
+            st.write(f"Showing stock prices for **{selected_company}** from **{start_stock_date}** to **{end_stock_date}**")
+            st.dataframe(filtered_stock)
 
-        # Plot closing prices line chart
-        st.line_chart(filtered_stock.set_index('Date')['Close'])
+            # Plot closing prices line chart
+            st.line_chart(filtered_stock.set_index('Date')['Close'])
