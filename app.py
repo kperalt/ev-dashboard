@@ -16,7 +16,9 @@ df_sales_long = df_wide.melt(
     value_name='Sales'
 )
 # Clean company names
-df_sales_long['Company'] = df_sales_long['Company'].str.replace('_sales', '').str.capitalize()
+company_name_map = {'tesla': 'Tesla', 'byd': 'BYD', 'nio': 'NIO'}
+df_sales_long['Company'] = df_sales_long['Company'].str.replace('_sales', '', regex=False).str.lower().map(company_name_map)
+
 
 # Load Stock CSV
 df_stock = pd.read_csv("EV_Data/data/cleaned_stock_data.csv")
