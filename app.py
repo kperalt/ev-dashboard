@@ -2,12 +2,12 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+from matplotlib.dates import AutoDateLocator, AutoDateFormatter
 
 # Load Sales CSV
 df_wide = pd.read_csv("EV_Data/data/final_ev_sales.csv")
 # Convert date column to datetime
 df_wide['Date'] = pd.to_datetime(df_wide['Date'])
-
 # Melt wide to long format
 df_sales_long = df_wide.melt(
     id_vars=['Date'],
@@ -15,16 +15,11 @@ df_sales_long = df_wide.melt(
     var_name='Company',
     value_name='Sales'
 )
-# Clean company names
-company_name_map = {'tesla': 'Tesla', 'byd': 'BYD', 'nio': 'NIO'}
-df_sales_long['Company'] = df_sales_long['Company'].str.replace('_sales', '', regex=False).str.lower().map(company_name_map)
-
 
 # Load Stock CSV
 df_stock = pd.read_csv("EV_Data/data/cleaned_stock_data.csv")
 # Convert date column to datetime
 df_stock['Date'] = pd.to_datetime(df_stock['Date'])
-
 # Melt stock data to long format
 df_stock_long = df_stock.melt(
     id_vars=['Date'],
@@ -64,7 +59,6 @@ tab1, tab2 = st.tabs(["📊 EV Sales", "📈 Stock Prices"])
 #tab1
 with tab1:
     st.header("EV Sales Over Time")
-
     # Sidebar date filter
     min_date = df_sales_long['Date'].min().date()
     max_date = df_sales_long['Date'].max().date()
@@ -93,6 +87,8 @@ with tab1:
         ax.set_xlabel("Date")
         ax.set_ylabel("Sales Volume")
         ax.legend()
+        ax.xaxis.set_major_locator(AutoDateLocator())
+        ax.xaxis.set_major_formatter(AutoDateFormatter(AutoDateLocator()))
         ax.tick_params(axis='x', rotation=45)
         st.pyplot(fig)
 
@@ -100,7 +96,6 @@ with tab1:
 #tab2
 with tab2:
     st.header("EV Stock Prices Over Time")
-
     # Company selection
     company_options = ['Tesla', 'BYD', 'NIO']
     selected_company = st.selectbox("Select a company", company_options)
@@ -141,12 +136,14 @@ with tab2:
             st.dataframe(filtered_stock)
 
             # Line chart for stock
-            ig2, ax2 = plt.subplots(figsize=(10, 4))
+            fig2, ax2 = plt.subplots(figsize=(10, 4))
             color_map = {'Tesla': 'red', 'BYD': 'blue', 'NIO': 'green'}
             ax2.plot(filtered_stock['Date'], filtered_stock['Close'], color=color_map[selected_company])
             ax2.set_title(f"{selected_company} Stock Prices")
             ax2.set_xlabel("Date")
             ax2.set_ylabel("Closing Price (USD)")
+            ax2.xaxis.set_major_locator(AutoDateLocator())
+            ax2.xaxis.set_major_formatter(AutoDateFormatter(AutoDateLocator()))
             ax2.tick_params(axis='x', rotation=45)
             st.pyplot(fig2)
             
