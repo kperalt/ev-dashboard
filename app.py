@@ -82,18 +82,18 @@ with tab1:
         st.dataframe(filtered_sales)
 
         # Line chart with formatted y-axis
-        fig, ax = plt.subplots()
-        for company in filtered_sales['Company'].unique():
-            company_data = filtered_sales[filtered_sales['Company'] == company]
-            ax.plot(company_data['Date'], company_data['Sales'], label=company)
-        
-        ax.set_title("EV Sales Over Time", fontsize=14)
+        sales_chart_data = filtered_sales.pivot(index='Date', columns='Company', values='Sales')
+        fig, ax = plt.subplots(figsize=(10, 4))
+        colors = {'Tesla': 'red', 'BYD': 'blue', 'NIO': 'green'}
+        for company in sales_chart_data.columns:
+            ax.plot(sales_chart_data.index, sales_chart_data[company], label=company, color=colors[company])
+        ax.set_title("EV Sales Over Time")
         ax.set_xlabel("Date")
-        ax.set_ylabel("Units Sold")
-        ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f'{int(x):,}'))  # add comma formatting
+        ax.set_ylabel("Sales Volume")
         ax.legend()
+        ax.tick_params(axis='x', rotation=45)
         st.pyplot(fig)
-    
+
     st.markdown("---")
 #tab2
 with tab2:
@@ -139,12 +139,13 @@ with tab2:
             st.dataframe(filtered_stock)
 
             # Line chart for stock
-            fig, ax = plt.subplots()
-            ax.plot(filtered_stock['Date'], filtered_stock['Close'], label=selected_company, color='green')
-            ax.set_title(f"{selected_company} Stock Prices", fontsize=14)
-            ax.set_xlabel("Date")
-            ax.set_ylabel("Closing Price (USD)")
-            ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f'${x:,.2f}'))  # format currency
-            st.pyplot(fig)
+            ig2, ax2 = plt.subplots(figsize=(10, 4))
+            color_map = {'Tesla': 'red', 'BYD': 'blue', 'NIO': 'green'}
+            ax2.plot(filtered_stock['Date'], filtered_stock['Close'], color=color_map[selected_company])
+            ax2.set_title(f"{selected_company} Stock Prices")
+            ax2.set_xlabel("Date")
+            ax2.set_ylabel("Closing Price (USD)")
+            ax2.tick_params(axis='x', rotation=45)
+            st.pyplot(fig2)
             
         st.markdown("---")
