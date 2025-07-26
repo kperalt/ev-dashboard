@@ -171,7 +171,7 @@ with tab2:
         st.markdown("---")
 
 # Load News CSV
-df_news = pd.read_csv("EV_Data/data/ev_news_data.csv")
+df_news = pd.read_csv("/mnt/data/ev_news_data.csv")
 df_news['Date'] = pd.to_datetime(df_news['Date'])
 
 # Tab 3: News Headlines
