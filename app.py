@@ -169,3 +169,39 @@ with tab2:
             st.pyplot(fig2)
             
         st.markdown("---")
+
+# Load News CSV
+df_news = pd.read_csv("EV_Data/data/ev_news_data.csv")
+df_news['Date'] = pd.to_datetime(df_news['Date'])
+
+# Tab 3: News Headlines
+tab3, = st.tabs(["📰 News Headlines"])
+
+with tab3:
+    st.header("EV Company News")
+
+    st.markdown("Browse relevant headlines related to Tesla, BYD, and NIO.")
+
+    # Company filter
+    selected_news_company = st.selectbox("Select company", ['All', 'Tesla', 'BYD', 'NIO'])
+
+    # Language filter
+    show_only_chinese = st.checkbox("Show only Chinese-language headlines", value=False)
+
+    # Filter logic
+    filtered_news = df_news.copy()
+    if selected_news_company != 'All':
+        filtered_news = filtered_news[filtered_news['Company'] == selected_news_company]
+    if show_only_chinese:
+        filtered_news = filtered_news[filtered_news['Language'] == 'Chinese']
+
+    # Sort by date descending
+    filtered_news = filtered_news.sort_values(by='Date', ascending=False)
+
+    # Display headlines as cards
+    for _, row in filtered_news.iterrows():
+        with st.container():
+            st.subheader(f"{row['Title']}")
+            st.markdown(f"**Company:** {row['Company']} | **Source:** {row['Source']} | **Date:** {row['Date'].date()}")
+            st.write(row['Summary'])
+            st.markdown("---")
