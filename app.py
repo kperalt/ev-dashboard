@@ -59,10 +59,22 @@ tab1, tab2 = st.tabs(["📊 EV Sales", "📈 Stock Prices"])
 #tab1
 with tab1:
     st.header("EV Sales Over Time")
+    
+    # add KPI section
+    st.subheader("📌 Key Metrics")
+    latest_date = df_sales_long['Date'].max()
+    latest_sales = df_sales_long[df_sales_long['Date'] == latest_date]
+
+    col1, col2, col3 = st.columns(3)
+    for col, company in zip([col1, col2, col3], ['Tesla', 'BYD', 'NIO']):
+        latest_value = latest_sales[latest_sales['Company'] == company]['Sales'].values[0]
+        max_value = df_sales_long[df_sales_long['Company'] == company]['Sales'].max()
+        col.metric(label=f"{company} Latest Sales", value=f"{latest_value:,.0f}", delta=f"Peak: {max_value:,.0f}")
+
+    
     # Sidebar date filter
     min_date = df_sales_long['Date'].min().date()
     max_date = df_sales_long['Date'].max().date()
-    
     start_date = st.sidebar.date_input("Start date", min_value=min_date, value=min_date)
     end_date = st.sidebar.date_input("End date", min_value=min_date, value=max_date)
 
@@ -93,6 +105,7 @@ with tab1:
         st.pyplot(fig)
 
     st.markdown("---")
+    
 #tab2
 with tab2:
     st.header("EV Stock Prices Over Time")
@@ -134,6 +147,14 @@ with tab2:
             
             st.markdown(f"**Showing stock prices for {selected_company} from {start_stock_date} to {end_stock_date}**")
             st.dataframe(filtered_stock)
+            
+            # add KPI section
+            st.subheader("📌 Key Metrics")
+            if not filtered_stock.empty:
+                latest_stock_price = filtered_stock.iloc[-1]['Close']
+                avg_price = filtered_stock['Close'].mean()
+                st.metric(label="Latest Closing Price", value=f"${latest_stock_price:,.2f}")
+                st.metric(label="Average Price in Range", value=f"${avg_price:,.2f}")
 
             # Line chart for stock
             fig2, ax2 = plt.subplots(figsize=(10, 4))
