@@ -111,11 +111,6 @@ with st.sidebar:
     2. Adjust the date ranges to filter data.
     3. Explore trends and data interactively.
     """)
-    
-    min_date = df_sales_long['Date'].min().date()
-    max_date = df_sales_long['Date'].max().date()
-    start_date = st.date_input(t['start_date'], min_value=min_date, max_value=max_date, value=min_date)
-    end_date = st.date_input(t['end_date'], min_value=min_date, max_value=max_date, value=max_date)
 
 # Create tabs: tab1 = Sales and tab2 = Stock
 tab1, tab2 = st.tabs(["📊 EV Sales", "📈 Stock Prices"])
