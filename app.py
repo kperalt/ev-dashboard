@@ -4,6 +4,65 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib.dates import AutoDateLocator, AutoDateFormatter
 
+# Add bilingual translations
+LANGUAGES = {
+    'English': 'en',
+    '中文': 'zh'
+}
+
+translations = {
+    'en': {
+        'title': "EV Market Insights Dashboard",
+        'welcome': "Welcome to my EV Market Insights Dashboard! Here you can explore:\n- Stock price trends of major EV companies in China.\n- Monthly EV sales data.\n\nUse the tabs below to navigate between Sales and Stock data.",
+        'sales_tab': "📊 EV Sales",
+        'stock_tab': "📈 Stock Prices",
+        'instructions': """
+1. Select a company from the dropdown (in Stock tab).
+2. Adjust the date ranges to filter data.
+3. Explore trends and data interactively.
+        """,
+        'select_company': "Select a company",
+        'start_date': "Start date",
+        'end_date': "End date",
+        'error_end_before_start': "End date must be after start date.",
+        'showing_data': "**Showing data from {} to {}**",
+        'latest_sales': "{} Latest Sales",
+        'peak': "Peak: {:,.0f}",
+        'key_metrics': "📌 Key Metrics",
+        'closing_price': "Latest Closing Price",
+        'average_price': "Average Price in Range",
+        'no_stock_data': "No stock data available for {}.",
+    },
+    'zh': {
+        'title': "电动车市场洞察仪表板",
+        'welcome': "欢迎使用我的电动车市场洞察仪表板！您可以探索以下内容：\n- 中国主要电动车企业的股价趋势。\n- 月度电动车销量数据。\n\n使用下面的标签在销量和股价数据之间切换。",
+        'sales_tab': "📊 电动车销量",
+        'stock_tab': "📈 股价趋势",
+        'instructions': """
+1. 在“股价”标签中选择一家企业。
+2. 调整日期范围以筛选数据。
+3. 交互式探索趋势和数据。
+        """,
+        'select_company': "选择企业",
+        'start_date': "开始日期",
+        'end_date': "结束日期",
+        'error_end_before_start': "结束日期必须在开始日期之后。",
+        'showing_data': "**显示从 {} 到 {} 的数据**",
+        'latest_sales': "{} 最新销量",
+        'peak': "峰值: {:,.0f}",
+        'key_metrics': "📌 关键指标",
+        'closing_price': "最新收盘价",
+        'average_price': "选定时间内平均价格",
+        'no_stock_data': "没有 {} 的股价数据。",
+    }
+}
+
+# Sidebar language toggle
+with st.sidebar:
+    language = st.selectbox("🌐 Select Language / 选择语言", list(LANGUAGES.keys()))
+lang_code = LANGUAGES[language]
+t = translations[lang_code]
+
 # Load Sales CSV
 df_wide = pd.read_csv("EV_Data/data/final_ev_sales.csv")
 # Convert date column to datetime
@@ -52,6 +111,11 @@ with st.sidebar:
     2. Adjust the date ranges to filter data.
     3. Explore trends and data interactively.
     """)
+    
+    min_date = df_sales_long['Date'].min().date()
+    max_date = df_sales_long['Date'].max().date()
+    start_date = st.date_input(t['start_date'], min_value=min_date, max_value=max_date, value=min_date)
+    end_date = st.date_input(t['end_date'], min_value=min_date, max_value=max_date, value=max_date)
 
 # Create tabs: tab1 = Sales and tab2 = Stock
 tab1, tab2 = st.tabs(["📊 EV Sales", "📈 Stock Prices"])
