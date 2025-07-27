@@ -32,6 +32,10 @@ translations = {
         'closing_price': "Latest Closing Price",
         'average_price': "Average Price in Range",
         'no_stock_data': "No stock data available for {}.",
+        'date': "Date",
+        'sales_volume': "Sales Volume",
+        'ev_sales_over_time': "EV Sales Over Time",
+        'ev_stock_prices_over_time': "EV Stock Prices Over Time",
     },
     'zh': {
         'title': "电动车市场洞察仪表板",
@@ -54,6 +58,10 @@ translations = {
         'closing_price': "最新收盘价",
         'average_price': "选定时间内平均价格",
         'no_stock_data': "没有 {} 的股价数据。",
+        'date': "日期",
+        'sales_volume': "销量",
+        'ev_sales_over_time': "电动车销量趋势",
+        'ev_stock_prices_over_time': "电动车股价趋势",
     }
 }
 
@@ -95,32 +103,22 @@ df_stock_long['Company'] = df_stock_long['Company'].replace({
 })
 
 # Ready Streamlit dashboard
-st.title(t['EV Market Insights Dashboard'])
-st.markdown("""
-Welcome to my EV Market Insights Dashboard! Here you can explore:
-- Stock price trends of major EV companies in China.
-- Monthly EV sales data.
-  
-Use the tabs below to navigate between Sales and Stock data.
-""")
+st.title(t['title'])  #CHANGED
+st.markdown(t['welcome'])
 
 with st.sidebar:
-    st.header(t['Instructions'])
-    st.markdown("""
-    1. Select a company from the dropdown (in Stock tab).
-    2. Adjust the date ranges to filter data.
-    3. Explore trends and data interactively.
-    """)
+    st.title(t['title'])
+    st.markdown(t['welcome'])
 
 # Create tabs: tab1 = Sales and tab2 = Stock
-tab1, tab2 = st.tabs(t['📊 EV Sales'], t['📈 Stock Prices'])
+tab1, tab2 = st.tabs([t['sales_tab'], t['stock_tab']])
 
 #tab1
 with tab1:
-    st.header(t['EV Sales Over Time'])
+    st.header(t['ev_sales_over_time'])
     
     # add KPI section
-    st.subheader(t['📌 Key Metrics'])
+    st.subheader(t['key_metrics'])
     latest_date = df_sales_long['Date'].max()
     latest_sales = df_sales_long[df_sales_long['Date'] == latest_date]
 
@@ -128,17 +126,19 @@ with tab1:
     for col, company in zip([col1, col2, col3], ['Tesla', 'BYD', 'NIO']):
         latest_value = latest_sales[latest_sales['Company'] == company]['Sales'].values[0]
         max_value = df_sales_long[df_sales_long['Company'] == company]['Sales'].max()
-        col.metric(label=t['latest_sales'].format(company), value=f"{latest_value:,.0f}", delta=t['peak'].format(max_value))
+        label=t['latest_sales'].format(company),
+        value=f"{latest_value:,.0f}",
+        delta=t['peak'].format(max_value)
 
     
     # Sidebar date filter
     min_date = df_sales_long['Date'].min().date()
     max_date = df_sales_long['Date'].max().date()
-    start_date = st.sidebar.date_input(t['Start date'], min_value=min_date, value=min_date)
-    end_date = st.sidebar.date_input(t['End date'], min_value=min_date, value=max_date)
+    start_date = st.sidebar.date_input(t['start_date'], min_value=min_date, value=min_date)
+    end_date = st.sidebar.date_input(t['end_date'], min_value=min_date, max_value=max_date, value=max_date)
 
     if start_date > end_date:
-        st.error(t['End date must be after start date.'])
+        st.error(t['error_end_before_start'])
     else:
         filtered_sales = df_sales_long[
             (df_sales_long['Date'] >= pd.to_datetime(start_date)) &
@@ -154,9 +154,9 @@ with tab1:
         colors = {'Tesla': 'red', 'BYD': 'blue', 'NIO': 'green'}
         for company in sales_chart_data.columns:
             ax.plot(sales_chart_data.index, sales_chart_data[company], label=company, color=colors[company])
-        ax.set_title(t['EV Sales Over Time'])
-        ax.set_xlabel(t['Date'])
-        ax.set_ylabel(t['Sales Volume'])
+        ax.set_title(t['ev_sales_over_time'])
+        ax.set_xlabel(t['date'])
+        ax.set_ylabel(t['sales_volume'])
         ax.legend()
         ax.xaxis.set_major_locator(AutoDateLocator())
         ax.xaxis.set_major_formatter(AutoDateFormatter(AutoDateLocator()))
@@ -167,10 +167,10 @@ with tab1:
     
 #tab2
 with tab2:
-    st.header(t['EV Stock Prices Over Time'])
+    st.header(t['ev_stock_prices_over_time'])
     # Company selection
     company_options = ['Tesla', 'BYD', 'NIO']
-    selected_company = st.selectbox(t['Select a company'], company_options)
+    selected_company = st.selectbox(t['select_company'], company_options)
 
     # Filter stock data
     company_stock = df_stock_long[df_stock_long['Company'] == selected_company]
@@ -183,7 +183,7 @@ with tab2:
         max_stock_date = company_stock['Date'].max().date()
 
         stock_date_range = st.date_input(
-            "Select date range",
+            t['start_date'] + " - " + t['end_date'],
             value=(min_stock_date, max_stock_date),
             min_value=min_stock_date,
             max_value=max_stock_date,
@@ -196,7 +196,7 @@ with tab2:
             start_stock_date = end_stock_date = stock_date_range
 
         if start_stock_date > end_stock_date:
-            st.error("Error: End date must be after start date.")
+            st.error(t['error_end_before_start'])
         else:
             # Filter stock data within selected date range
             filtered_stock = company_stock[
@@ -204,23 +204,23 @@ with tab2:
                 (company_stock['Date'] <= pd.to_datetime(end_stock_date))
             ]
             
-            st.markdown(f"**Showing stock prices for {selected_company} from {start_stock_date} to {end_stock_date}**")
+            st.markdown(t['showing_data'].format(start_stock_date, end_stock_date))
             st.dataframe(filtered_stock)
             
             # add KPI section
-            st.subheader(t['📌 Key Metrics'])
+            st.subheader(t['key_metrics'])
             if not filtered_stock.empty:
                 latest_stock_price = filtered_stock.iloc[-1]['Close']
                 avg_price = filtered_stock['Close'].mean()
-                st.metric(label="Latest Closing Price", value=f"${latest_stock_price:,.2f}")
-                st.metric(label="Average Price in Range", value=f"${avg_price:,.2f}")
+                st.metric(label=t['closing_price'], value=f"${latest_stock_price:,.2f}")
+                st.metric(label=t['average_price'], value=f"${avg_price:,.2f}")
 
             # Line chart for stock
             fig2, ax2 = plt.subplots(figsize=(10, 4))
             color_map = {'Tesla': 'red', 'BYD': 'blue', 'NIO': 'green'}
             ax2.plot(filtered_stock['Date'], filtered_stock['Close'], color=color_map[selected_company])
-            ax2.set_title(f"{selected_company} Stock Prices")
-            ax2.set_xlabel("Date")
+            ax2.set_title(f"{selected_company} {t['stock_tab']}")
+            ax2.set_xlabel(t['date'])
             ax2.set_ylabel("Closing Price (USD)")
             ax2.xaxis.set_major_locator(AutoDateLocator())
             ax2.xaxis.set_major_formatter(AutoDateFormatter(AutoDateLocator()))
