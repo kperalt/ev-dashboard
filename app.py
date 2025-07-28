@@ -4,6 +4,13 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib.dates import AutoDateLocator, AutoDateFormatter
 
+#set title, layout, icon
+st.set_page_config(
+    page_title="EV Market Insights Dashboard",
+    layout="wide",
+    page_icon="🚗"
+)
+
 # Add bilingual translations
 LANGUAGES = {
     'English': 'en',
@@ -147,6 +154,15 @@ with tab1:
         
         st.markdown(t['showing_data'].format(start_date, end_date))
         st.dataframe(filtered_sales)
+        
+        # Add CSV download for sales
+        sales_csv = filtered_sales.to_csv(index=False).encode('utf-8')
+            st.download_button(
+        label="📥 Download Sales Data as CSV",
+        data=sales_csv,
+        file_name="ev_sales_filtered.csv",
+        mime="text/csv",
+        )
 
         # Line chart with formatted y-axis
         sales_chart_data = filtered_sales.pivot(index='Date', columns='Company', values='Sales')
@@ -206,6 +222,15 @@ with tab2:
             
             st.markdown(t['showing_data'].format(start_stock_date, end_stock_date))
             st.dataframe(filtered_stock)
+            
+            # Add CSV download for stock
+            stock_csv = filtered_stock.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Download Stock Data as CSV",
+            data=stock_csv,
+            file_name=f"{selected_company.lower()}_stock_filtered.csv",
+            mime="text/csv",
+        )
             
             # add KPI section
             st.subheader(t['key_metrics'])
