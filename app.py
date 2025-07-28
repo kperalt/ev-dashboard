@@ -157,7 +157,7 @@ with tab1:
         
         # Add CSV download for sales
         sales_csv = filtered_sales.to_csv(index=False).encode('utf-8')
-    st.download_button(
+        st.download_button(
         label="📥 Download Sales Data as CSV",
         data=sales_csv,
         file_name="ev_sales_filtered.csv",
