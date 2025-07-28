@@ -43,6 +43,8 @@ translations = {
         'sales_volume': "Sales Volume",
         'ev_sales_over_time': "EV Sales Over Time",
         'ev_stock_prices_over_time': "EV Stock Prices Over Time",
+        'download_sales': "📥 Download Sales Data as CSV",
+        'download_stock': "📥 Download Stock Data as CSV",
     },
     'zh': {
         'title': "电动车市场洞察仪表板",
@@ -69,6 +71,8 @@ translations = {
         'sales_volume': "销量",
         'ev_sales_over_time': "电动车销量趋势",
         'ev_stock_prices_over_time': "电动车股价趋势",
+        'download_sales': "📥 下載銷售數據（CSV）",
+        'download_stock': "📥 下載股票數據（CSV）",
     }
 }
 
@@ -158,7 +162,7 @@ with tab1:
         # Add CSV download for sales
         sales_csv = filtered_sales.to_csv(index=False).encode('utf-8')
         st.download_button(
-        label="📥 Download Sales Data as CSV",
+        label=t['download_sales'],
         data=sales_csv,
         file_name="ev_sales_filtered.csv",
         mime="text/csv",
@@ -226,7 +230,7 @@ with tab2:
             # Add CSV download for stock
             stock_csv = filtered_stock.to_csv(index=False).encode('utf-8')
             st.download_button(
-            label="📥 Download Stock Data as CSV",
+                    label=t['download_stock'],
             data=stock_csv,
             file_name=f"{selected_company.lower()}_stock_filtered.csv",
             mime="text/csv",
