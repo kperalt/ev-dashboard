@@ -225,12 +225,12 @@ with tab2:
             
             # Add CSV download for stock
             stock_csv = filtered_stock.to_csv(index=False).encode('utf-8')
-        st.download_button(
+            st.download_button(
             label="📥 Download Stock Data as CSV",
             data=stock_csv,
             file_name=f"{selected_company.lower()}_stock_filtered.csv",
             mime="text/csv",
-        )
+            )
             
             # add KPI section
             st.subheader(t['key_metrics'])
