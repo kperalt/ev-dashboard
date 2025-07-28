@@ -20,7 +20,6 @@ A bilingual data dashboard analyzing Electric Vehicle (EV) market trends in Chin
 ## 📊 Project Structure
 ev-dashboard/
 ├── app.py # Main Streamlit app
-
 ├── translations.py # Bilingual text dictionary
 ├── requirements.txt # Python dependencies
 ├── EV_Data/
